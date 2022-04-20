@@ -1,24 +1,30 @@
 import pandas as pd
 from bs4 import BeautifulSoup
-
 import requests
 import os
 import json
+import re
 
+def get_references(text):
+    ref = re.findall('\(SOU \d{4}:\d+\)', text)
+    reference_list = []
+    for r in ref:
+        try:
+            rm = int(r[5:9])
+            nummer = int(r[10:-1])
+            reference_list.append([rm, nummer])
+        except Exception:
+            None 
+    return reference_list
 
-
-
-def get_text(id):
+def get_doc_text(id):
     url = "https://data.riksdagen.se/dokumentstatus/" + str(id) 
     response = requests.get(url)
     soup1 = BeautifulSoup(response.text, 'lxml')
     dokument = soup1.dokumentstatus.dokument
-    
     soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
     text = soup2.get_text()
-    
     return text
-
 
 def get_docs_dictionary():
     search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=desc&rapport=&utformat=json&a=s#soktraff'

@@ -21,10 +21,62 @@ class ElasticInstance:
     def refesh_index(self, index_name):
         self.es.indices.refresh(index=index_name)
 
+        
+    def create_index(self, index_name, mapping=None):
+        return self.es.indices.create(
+            index = index_name, 
+            mappings = {
+                "mappings": {
+                    "properties": {
+                        "text": {
+                            "type": "text"
+                        },
+                        "publicerad": {
+                            "type": "date"
+                        },
+                        "pdf_url": {
+                            "type": "keyword"
+                        },
+                        "summary": {
+                            "type": "text"
+                        },
+                        "rm": {
+                            "type": "integer"
+                        },
+                        "beteckning": {
+                            "type": "integer"
+                        },
+                        "doktyp": {
+                            "type": "keyword"
+                        },
+                        "referenser": {
+                            "type": "keyword"
+                        },
+                    }
+                }
+            },
+            settings = {
+                "analysis": {
+                    "analyzer": {
+                        "my_analyzer": {
+                            "tokenizer": "standard",
+                            "filter": [ "lowercase", "snöboll" ]
+                        }
+                    },
+                    "filter": {
+                        "snöboll": {
+                            "type": "snowball",
+                            "language": "Swedish"
+                        }
+                    }
+                }
+            }
+        )
+        
     """
         Creates or updates a document in an index. 
         
-            If an index with the given name does not exist, it is created.
+            If an index with the given name does not exist, returns None.
             If a document with the given id already exists, it is updated. 
 
 
@@ -33,21 +85,24 @@ class ElasticInstance:
                 document_id optional(str): The id of the document. If not given, a new id is generated.
     """
     def add_to_index(self, index_name, document, document_id=None):
-         
-        try:
-            if document_id is None:
-                # No explicit id given to the inserted document.
-                return self.es.index(
-                    index=index_name,
-                    document=document
-                )
-            else:
-                return self.es.index(
-                    index=index_name,
-                    id=document_id,
-                    document=document
-                )
-        except Exception:
+        
+        if self.es.indices.exists(index_name):
+            try:
+                if document_id is None:
+                    # No explicit id given to the inserted document.
+                    return self.es.index(
+                        index=index_name,
+                        document=document
+                    )
+                else:
+                    return self.es.index(
+                        index=index_name,
+                        id=document_id,
+                        document=document
+                    )
+            except Exception:
+                return None
+        else:
             return None
 
 

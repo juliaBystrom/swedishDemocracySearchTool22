@@ -6,15 +6,17 @@ import json
 import re
 
 def get_references(text):
-    ref = re.findall('\(SOU \d{4}:\d+\)', text)
+    ref = re.findall('\(SOU \d{4}:\d+\w*\d*\)', text)
     reference_list = []
     for r in ref:
         try:
-            rm = int(r[5:9])
-            nummer = int(r[10:-1])
-            reference_list.append([rm, nummer])
+            rm = r[5:9]
+            nummer = r[10:-1]
+            reference = [rm, nummer]
+            if reference not in reference_list:
+                reference_list.append(reference)
         except Exception:
-            None 
+            pass 
     return reference_list
 
 def get_doc_text(id):
@@ -61,5 +63,7 @@ def create_document(text, doc_info):
         'beteckning': beteckning,
         'doktyp':doktyp,
     }
-
     return document
+
+text = get_doc_text("GMB3136d1")
+print(get_references(text))

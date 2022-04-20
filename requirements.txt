@@ -3,3 +3,4 @@ elasticsearch-async
 requests
 bs4
 pandas
+lxml

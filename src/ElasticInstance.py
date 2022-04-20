@@ -33,6 +33,7 @@ class ElasticInstance:
                 document_id optional(str): The id of the document. If not given, a new id is generated.
     """
     def add_to_index(self, index_name, document, document_id=None):
+         
         try:
             if document_id is None:
                 # No explicit id given to the inserted document.

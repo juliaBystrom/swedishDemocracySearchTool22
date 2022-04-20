@@ -65,5 +65,3 @@ def create_document(text, doc_info):
     }
     return document
 
-text = get_doc_text("GMB3136d1")
-print(get_references(text))

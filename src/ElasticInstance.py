@@ -20,7 +20,7 @@ class ElasticInstance:
     default_settings = {
         "analysis": {
             "analyzer": {
-                "my_analyzer": {
+                "default": {
                     "tokenizer": "standard",
                     "filter": [ "lowercase", "snöboll" ]
                 }

@@ -6,17 +6,15 @@ import os
 import json
 
 
-
-
 def get_text(id):
-    url = "https://data.riksdagen.se/dokumentstatus/" + str(id) 
+    url = "https://data.riksdagen.se/dokumentstatus/" + str(id)
     response = requests.get(url)
     soup1 = BeautifulSoup(response.text, 'lxml')
     dokument = soup1.dokumentstatus.dokument
-    
+
     soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
     text = soup2.get_text()
-    
+
     return text
 
 
@@ -29,14 +27,16 @@ def get_docs_dictionary():
     while('@nasta_sida') in doc_data['dokumentlista']:
         print('Downloading page {}'.format(i))
         i += 1
+
+        for doc in doc_data['dokumentlista']['dokument']:
+            print(doc['dok_id'])
+            docs[doc['dok_id']] = doc
+
         doc_data = json.loads(requests.get(url=doc_data['dokumentlista']['@nasta_sida']).text)
         break
 
-    for doc in doc_data['dokumentlista']['dokument']:
-        #print(doc['dok_id'])
-        docs[doc['dok_id']] = doc
-
     return docs
+
 
 def create_document(text, doc_info):
     publicerad: str = doc_info['publicerad']

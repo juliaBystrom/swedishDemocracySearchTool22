@@ -6,8 +6,6 @@ import os
 import json
 
 
-
-
 def get_text(id):
     url = "https://data.riksdagen.se/dokumentstatus/" + str(id)
     response = requests.get(url)

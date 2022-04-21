@@ -4,6 +4,36 @@ import configparser
 
 class ElasticInstance:
 
+    default_mapping = {
+        "properties": {
+            "text":       { "type": "text" },
+            "publicerad": { "type": "date" },
+            "pdf_url":    { "type": "keyword" },
+            "summary":    { "type": "text" },
+            "rm":         { "type": "integer" },
+            "beteckning": { "type": "integer" },
+            "doktyp":     { "type": "keyword" },
+            "referenser": { "type": "keyword" }
+        }
+    }
+
+    default_settings = {
+        "analysis": {
+            "analyzer": {
+                "my_analyzer": {
+                    "tokenizer": "standard",
+                    "filter": [ "lowercase", "snöboll" ]
+                }
+            },
+            "filter": {
+                "snöboll": {
+                    "type": "snowball",
+                    "language": "Swedish"
+                }
+            }
+        }
+    }
+
     def __init__(self):
         config = configparser.ConfigParser()
         config.read('example.ini')
@@ -32,51 +62,9 @@ class ElasticInstance:
             return None
 
         return self.es.indices.create(
-            index = index_name,
-            mappings = {
-                "properties": {
-                    "text": {
-                        "type": "text"
-                    },
-                    "publicerad": {
-                        "type": "date"
-                    },
-                    "pdf_url": {
-                        "type": "keyword"
-                    },
-                    "summary": {
-                        "type": "text"
-                    },
-                    "rm": {
-                        "type": "integer"
-                    },
-                    "beteckning": {
-                        "type": "integer"
-                    },
-                    "doktyp": {
-                        "type": "keyword"
-                    },
-                    "referenser": {
-                        "type": "keyword"
-                    }
-                }
-            },
-            settings = {
-                "analysis": {
-                    "analyzer": {
-                        "my_analyzer": {
-                            "tokenizer": "standard",
-                            "filter": [ "lowercase", "snöboll" ]
-                        }
-                    },
-                    "filter": {
-                        "snöboll": {
-                            "type": "snowball",
-                            "language": "Swedish"
-                        }
-                    }
-                }
-            }
+            index=index_name,
+            mappings=self.default_mapping,
+            settings=self.default_settings
         )
 
     """
@@ -144,7 +132,7 @@ class ElasticInstance:
             search_string: String to be searched
     """
     def search_index(self, index_name, field, search_string):
-        result =  self.es.search(
+        result = self.es.search(
             index=index_name,
             query={
                 'match': {field: search_string}

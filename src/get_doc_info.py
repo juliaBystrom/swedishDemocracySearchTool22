@@ -9,14 +9,14 @@ import json
 
 
 def get_text(id):
-    url = "https://data.riksdagen.se/dokumentstatus/" + str(id) 
+    url = "https://data.riksdagen.se/dokumentstatus/" + str(id)
     response = requests.get(url)
     soup1 = BeautifulSoup(response.text, 'lxml')
     dokument = soup1.dokumentstatus.dokument
-    
+
     soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
     text = soup2.get_text()
-    
+
     return text
 
 
@@ -37,6 +37,7 @@ def get_docs_dictionary():
         docs[doc['dok_id']] = doc
 
     return docs
+
 
 def create_document(text, doc_info):
     publicerad: str = doc_info['publicerad']

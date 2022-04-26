@@ -71,7 +71,6 @@ class ElasticInstance:
             print(f"[Error] Can not update document with id {document_id} because it was not found")
             return None
 
-    
     """
         Args:
             index_name: Name of the index to be searched

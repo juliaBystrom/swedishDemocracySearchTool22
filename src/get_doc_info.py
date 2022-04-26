@@ -12,7 +12,7 @@ def get_references(text):
         try:
             rm = r[5:9]
             nummer = r[10:-1]
-            reference = [rm, nummer]
+            reference = str(rm) + ":" + str(nummer)
             if reference not in reference_list:
                 reference_list.append(reference)
         except Exception:
@@ -33,39 +33,49 @@ def get_doc_text(id):
     return text
 
 def get_docs_dictionary():
-    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=desc&rapport=&utformat=json&a=s#soktraff'
+    #search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=2000&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
     doc_data = json.loads(requests.get(url=search_url).text)
     docs = {}
+    for doc in doc_data['dokumentlista']['dokument']:
+        #print(doc['dok_id'])
+        docs[doc['dok_id']] = doc
 
     i = 0
     while('@nasta_sida') in doc_data['dokumentlista']:
         print('Downloading page {}'.format(i))
         i += 1
         doc_data = json.loads(requests.get(url=doc_data['dokumentlista']['@nasta_sida']).text)
+        for doc in doc_data['dokumentlista']['dokument']:
+            #print(doc['dok_id'])
+            docs[doc['dok_id']] = doc
         break
 
-    for doc in doc_data['dokumentlista']['dokument']:
-        #print(doc['dok_id'])
-        docs[doc['dok_id']] = doc
+    
 
     return docs
 
-def create_document(text, doc_info):
+def create_document(text, doc_info, ref_out=None):
     publicerad: str = doc_info['publicerad']
-    pdf_url: str = doc_info['filbilaga']['fil']['url']
+    pdf_url: str = ""
+    if doc_info['filbilaga'] is not None: 
+        pdf_url: str = doc_info['filbilaga']['fil']['url'] 
     summary: str = doc_info['summary']
-    rm: str= doc_info['rm']
-    beteckning: str = doc_info['beteckning']
+    rm: str = doc_info['rm']
+    nummer: str = doc_info['nummer']
     doktyp: str = doc_info['doktyp']
-
+    ref_out: str = ref_out
+    ref_in: list = []
     document = {
         'text': text,
         'publicerad': publicerad,
         'pdf_url': pdf_url,
         'summary': summary,
-        'rm': rm,
-        'beteckning': beteckning,
+        'rm': rm,                  
+        'nummer': nummer,
         'doktyp':doktyp,
+        'ref_out': ref_out,
+        'ref_in': ref_in
     }
     return document
 

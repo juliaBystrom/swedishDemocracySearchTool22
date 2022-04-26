@@ -29,7 +29,6 @@ def get_doc_text(id):
     text = re.sub(r'- och', ' och', text)
     #test = re.sub(r'-/', ' ', test) don't need
     text = re.sub(r'- ', '', text)
-    
     return text
 
 def get_docs_dictionary():
@@ -50,6 +49,7 @@ def get_docs_dictionary():
 
     return docs
 
+
 def create_document(text, doc_info):
     publicerad: str = doc_info['publicerad']
     pdf_url: str = doc_info['filbilaga']['fil']['url']
@@ -68,4 +68,3 @@ def create_document(text, doc_info):
         'doktyp':doktyp,
     }
     return document
-

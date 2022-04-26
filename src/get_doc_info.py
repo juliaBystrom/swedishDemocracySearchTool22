@@ -26,6 +26,10 @@ def get_doc_text(id):
     dokument = soup1.dokumentstatus.dokument
     soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
     text = soup2.get_text()
+    text = re.sub(r'- och', ' och', text)
+    #test = re.sub(r'-/', ' ', test) don't need
+    text = re.sub(r'- ', '', text)
+    
     return text
 
 def get_docs_dictionary():

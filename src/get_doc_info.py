@@ -1,24 +1,35 @@
 import pandas as pd
 from bs4 import BeautifulSoup
-
 import requests
 import os
 import json
+import re
 
+def get_references(text):
+    ref = re.findall('\(SOU \d{4}:\d+\w*\d*\)', text)
+    reference_list = []
+    for r in ref:
+        try:
+            rm = r[5:9]
+            nummer = r[10:-1]
+            reference = [rm, nummer]
+            if reference not in reference_list:
+                reference_list.append(reference)
+        except Exception:
+            pass 
+    return reference_list
 
-
-
-def get_text(id):
+def get_doc_text(id):
     url = "https://data.riksdagen.se/dokumentstatus/" + str(id) 
     response = requests.get(url)
     soup1 = BeautifulSoup(response.text, 'lxml')
     dokument = soup1.dokumentstatus.dokument
-    
     soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
     text = soup2.get_text()
-    
+    text = re.sub(r'- och', ' och', text)
+    #test = re.sub(r'-/', ' ', test) don't need
+    text = re.sub(r'- ', '', text)
     return text
-
 
 def get_docs_dictionary():
     search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=desc&rapport=&utformat=json&a=s#soktraff'
@@ -38,6 +49,7 @@ def get_docs_dictionary():
 
     return docs
 
+
 def create_document(text, doc_info):
     publicerad: str = doc_info['publicerad']
     pdf_url: str = doc_info['filbilaga']['fil']['url']
@@ -55,5 +67,4 @@ def create_document(text, doc_info):
         'beteckning': beteckning,
         'doktyp':doktyp,
     }
-
     return document

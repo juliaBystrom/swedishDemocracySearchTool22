@@ -6,3 +6,4 @@ pandas
 lxml
 fastapi
 uvicorn[standard]
+re

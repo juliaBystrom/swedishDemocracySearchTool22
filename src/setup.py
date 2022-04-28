@@ -4,6 +4,7 @@ from get_doc_info import create_document, get_doc_text, get_docs_dictionary, get
 index_docs = "demo2"
 index_names = "names_to_id"
 
+
 def fetch_and_add_data_to_es(el_inst: ElasticInstance):
     docs = get_docs_dictionary()
 
@@ -34,12 +35,14 @@ def fetch_and_add_data_to_es(el_inst: ElasticInstance):
         el_inst.add_to_index(index_docs, document, id )
         
 
+
 def search_data(el_inst: ElasticInstance):
-    
-    res = el_inst.search_index("demo", "text", "ningsområden")
+
+    res = el_inst.search_index("emil", "text", "terrorism")
     print("Found ", len(res) ," documents.")
 
 el_inst = ElasticInstance()
 fetch_and_add_data_to_es(el_inst)
 el_inst.refresh_index(index_docs)
 #search_data(el_inst)
+

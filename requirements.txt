@@ -4,4 +4,6 @@ requests
 bs4
 pandas
 lxml
+fastapi
+uvicorn[standard]
 re

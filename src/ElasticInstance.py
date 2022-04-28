@@ -2,8 +2,37 @@ from elasticsearch import Elasticsearch, helpers, NotFoundError
 import configparser
 
 
-
 class ElasticInstance:
+
+    default_mapping = {
+        "properties": {
+            "text":       { "type": "text" },
+            "publicerad": { "type": "date" },
+            "pdf_url":    { "type": "keyword" },
+            "summary":    { "type": "text" },
+            "rm":         { "type": "integer" },
+            "beteckning": { "type": "integer" },
+            "doktyp":     { "type": "keyword" },
+            "referenser": { "type": "keyword" }
+        }
+    }
+
+    default_settings = {
+        "analysis": {
+            "analyzer": {
+                "default": {
+                    "tokenizer": "standard",
+                    "filter": [ "lowercase", "snöboll" ]
+                }
+            },
+            "filter": {
+                "snöboll": {
+                    "type": "snowball",
+                    "language": "Swedish"
+                }
+            }
+        }
+    }
 
     def __init__(self):
         config = configparser.ConfigParser()
@@ -22,10 +51,33 @@ class ElasticInstance:
         self.es.indices.refresh(index=index_name)
 
     """
-        Creates or updates a document in an index. 
-        
-            If an index with the given name does not exist, it is created.
-            If a document with the given id already exists, it is updated. 
+        Creates an index with the appropriate mappings.
+
+            Args:
+                index_name (str): The name of the index.
+    """
+    def create_index(self, index_name):
+        # TODO: Better error handling
+        if self.es.indices.exists(index=index_name):
+            return None
+
+        return self.es.indices.create(
+            index=index_name,
+            mappings=self.default_mapping,
+            settings=self.default_settings
+        )
+
+    """
+        Deletes an index.
+    """
+    def delete_index(self, index_name):
+        self.es.indices.delete(index=index_name)
+
+    """
+        Creates or updates a document in an index.
+
+            If an index with the given name does not exist, returns None.
+            If a document with the given id already exists, it is updated.
 
             Args:
                 index_name (str): The name of the index.
@@ -56,13 +108,14 @@ class ElasticInstance:
                     document={"doc_id":doc_id}
                 )
 
+
     """
         Args:
             index_name: Name of the index containing the document to be updated
             id: Id of the document to be updated
             document: An object containing the fields and their new values.
                       If the fields does not exist, they will be added to the document.
-    
+
     """
     def update_document(self, index_name, document, document_id):
         try:
@@ -82,16 +135,28 @@ class ElasticInstance:
             search_string: String to be searched
     """
     def search_index(self, index_name, field, search_string):
+        result = self.es.search(
+            index=index_name,
+            body={ 'query': {
+                'match': {field: search_string}
+            }}
+        )
+        return result['hits']['hits']
+
+    """
+        Args:
+            index_name: Name of the index to be searched
+            query: query to be used for the search
+    """
+    def search_index_custom_query(self, index_name, query):
         result =  self.es.search(
             index=index_name,
-            query={
-                'match': {field: search_string}
-            }
+            body= query
         )
         return result['hits']['hits']
 
     def get_document_by_id(self, index_name, document_id):
-        try:  
+        try:
             return self.es.get(index=index_name, id=document_id)
         except NotFoundError:
             print(f"[Error] Document with id {document_id} was not found")
@@ -106,12 +171,12 @@ class ElasticInstance:
             return None
 
     def delete_document_by_id(self, index_name, document_id):
-        try: 
+        try:
             return self.es.delete(index=index_name, id=document_id)
         except NotFoundError:
             print(f"[Error] Can not delete document with id {document_id} because it was not found")
             return None
-    
+
     def document_exists(self, index_name, document_id):
         try:
             self.es.exists(index=index_name, id=document_id)

@@ -18,7 +18,7 @@ class ElasticInstance:
         output = self.es.info()
         print(output)
 
-    def refesh_index(self, index_name):
+    def refresh_index(self, index_name):
         self.es.indices.refresh(index=index_name)
 
     """
@@ -69,7 +69,7 @@ class ElasticInstance:
             return self.es.update(
                 index=index_name,
                 id=document_id,
-                doc=document,
+                doc=document
                 )
         except NotFoundError:
             print(f"[Error] Can not update document with id {document_id} because it was not found")

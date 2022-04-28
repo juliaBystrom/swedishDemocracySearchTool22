@@ -49,7 +49,7 @@ def get_docs_dictionary():
         for doc in doc_data['dokumentlista']['dokument']:
             #print(doc['dok_id'])
             docs[doc['dok_id']] = doc
-        #break
+        break
 
     
 

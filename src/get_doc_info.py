@@ -5,7 +5,7 @@ import os
 import json
 import re
 
-def get_references(text):
+def get_references(text, doc_name):
     ref = re.findall('\(SOU \d{4}:\d+\w*\d*\)', text)
     reference_list = []
     for r in ref:
@@ -13,7 +13,7 @@ def get_references(text):
             rm = r[5:9]
             nummer = r[10:-1]
             reference = str(rm) + ":" + str(nummer)
-            if reference not in reference_list:
+            if reference not in reference_list and reference != doc_name:
                 reference_list.append(reference)
         except Exception:
             pass 
@@ -49,7 +49,7 @@ def get_docs_dictionary():
         for doc in doc_data['dokumentlista']['dokument']:
             #print(doc['dok_id'])
             docs[doc['dok_id']] = doc
-        break
+        #break
 
     
 

@@ -134,9 +134,21 @@ class ElasticInstance:
     def search_index(self, index_name, field, search_string):
         result = self.es.search(
             index=index_name,
-            query={
+            body={ 'query': {
                 'match': {field: search_string}
-            }
+            }}
+        )
+        return result['hits']['hits']
+
+    """
+        Args:
+            index_name: Name of the index to be searched
+            query: query to be used for the search
+    """
+    def search_index_custom_query(self, index_name, query):
+        result =  self.es.search(
+            index=index_name,
+            body= query
         )
         return result['hits']['hits']
 

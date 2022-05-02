@@ -1,5 +1,6 @@
 from typing import Optional
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 
 from ElasticInstance import ElasticInstance
@@ -9,6 +10,21 @@ from elastic_helpers import get_date_query, get_search_string_match_query
 elastic = ElasticInstance()
 app = FastAPI()
 INDEX_NAME = "demo2"
+
+# Solving CORS issue with FastAPI https://fastapi.tiangolo.com/tutorial/cors/
+origins = [
+    "http://localhost",
+    "http://localhost:8000",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 """
 Default rote
@@ -43,12 +59,14 @@ Returns all documents matching the search query.
 
 
 """
+
+
 @app.get("/documents/search/")
-async def read_item(search_string: str = None, start_date: str =None, end_date: str=None, text: bool = False, phrase_search: bool = False):
-    print("search_string: ", search_string, "start_date: ", start_date, "end_date: ", end_date, "text: ", text, "phrase_search: ", phrase_search)
+async def read_item(search_string: str = None, start_date: str = None, end_date: str = None, text: bool = False, phrase_search: bool = False):
+    print("search_string: ", search_string, "start_date: ", start_date,
+          "end_date: ", end_date, "text: ", text, "phrase_search: ", phrase_search)
 
     # Create the query used by elastic search
-    
     date_filter = {}
     search_string_filter = {}
 
@@ -57,13 +75,14 @@ async def read_item(search_string: str = None, start_date: str =None, end_date: 
         date_filter = get_date_query(start_date=start_date, end_date=end_date)
     # If the user have specified a search string, create the search string filter
     if search_string:
-        search_string_filter = get_search_string_match_query("text", search_string, phrase_search)
-    
+        search_string_filter = get_search_string_match_query(
+            "text", search_string, phrase_search)
+
     # Combine the filters into a single query
-    query = { "query": {"bool": {  **search_string_filter,  **date_filter}}}
+    query = {"query": {"bool": {**search_string_filter,  **date_filter}}}
     # Search the index
     docs = elastic.search_index_custom_query(INDEX_NAME, query)
-    print("Found ", len(docs) ," documents.")
+    print("Found ", len(docs), " documents.")
 
     # If no docs was found return an empty list
     if not docs:
@@ -81,4 +100,3 @@ async def read_item(search_string: str = None, start_date: str =None, end_date: 
         for doc in docs:
             doc['_source'].pop('text')
         return docs
-

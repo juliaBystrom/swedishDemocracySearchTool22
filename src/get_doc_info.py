@@ -17,11 +17,11 @@ def get_references(text, doc_name):
             if reference not in reference_list and reference != doc_name:
                 reference_list.append(reference)
         except Exception:
-            pass 
+            pass
     return reference_list
 
 def get_doc_text(id):
-    url = "https://data.riksdagen.se/dokumentstatus/" + str(id) 
+    url = "https://data.riksdagen.se/dokumentstatus/" + str(id)
     response = requests.get(url)
     soup1 = BeautifulSoup(response.text, 'lxml')
     dokument = soup1.dokumentstatus.dokument
@@ -54,11 +54,10 @@ def get_docs_dictionary():
     return docs
 
 def create_document(text, doc_info, ref_out=None):
-    print("Created document")
     publicerad: str = doc_info['publicerad']
     pdf_url: str = ""
-    if doc_info['filbilaga'] is not None: 
-        pdf_url: str = doc_info['filbilaga']['fil']['url'] 
+    if doc_info['filbilaga'] is not None:
+        pdf_url: str = doc_info['filbilaga']['fil']['url']
     summary: str = doc_info['summary']
     rm: str = doc_info['rm']
     nummer: str = doc_info['nummer']
@@ -70,10 +69,11 @@ def create_document(text, doc_info, ref_out=None):
         'publicerad': publicerad,
         'pdf_url': pdf_url,
         'summary': summary,
-        'rm': rm,                  
+        'rm': rm,
         'nummer': nummer,
         'doktyp':doktyp,
         'ref_out': ref_out,
         'ref_in': ref_in
     }
+
     return document

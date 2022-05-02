@@ -5,12 +5,11 @@ from ElasticInstance import *
 from sknetwork.ranking import PageRank
 import pandas as pd
 import requests
-   
-def update_document_pagerank(el_inst, pr_scores):
-    pass
-    #for _, (id, score) in enumerate(pr_scores):
-        #doc = el_inst.get_document_by_id(id)
-        #{'pagerank': score}
+
+def update_document_pagerank(el_inst, pr_scores, index_name):
+    for _, (id, score) in enumerate(pr_scores):
+        el_inst.update_document(index_name, {'pagerank': score}, id)
+            
     
 def create_transition_matrix(ids, el_inst, index_name):
     df = pd.DataFrame(data=0.0, index=ids, columns=ids)
@@ -40,3 +39,12 @@ def get_pageranks(el_inst, index_name):
     pr = PageRank()
     scores = pr.fit_transform(df.to_numpy())
     pr_scores = dict(zip(ids, scores))
+
+
+el_inst = ElasticInstance()
+index_docs = 'demo2'
+#fetch_and_add_data_to_es(el_inst)
+#get_pageranks(el_inst, index_docs)
+pr_scores = {}
+pr_scores['DDE04b1'] = 0.5
+update_document_pagerank(el_inst, pr_scores, index_docs)

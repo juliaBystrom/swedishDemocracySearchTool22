@@ -1,5 +1,5 @@
 
-# Filter the publicerad field for the start and end date. Booth dates are inclusive.
+# Filter the "publicerad" field for the start and end date. Booth dates are inclusive.
 def get_date_query(start_date: str = None, end_date: str = None):
     if start_date is not None and end_date is not None:
         date = {"gte": start_date, "lte": end_date}
@@ -7,7 +7,7 @@ def get_date_query(start_date: str = None, end_date: str = None):
         date = {"lte": end_date}
     elif end_date is None:
         date = {"gte": start_date}
-    return { "filter": {"range": {"publicerad":  date}}}
+    return { "filter": {"range": {"rm":  date}}}
 
 
 # Search the text field for the search string

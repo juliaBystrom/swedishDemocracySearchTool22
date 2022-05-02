@@ -39,8 +39,8 @@ class ElasticInstance:
         config.read('example.ini')
 
         self.es = Elasticsearch(
-            cloud_id=config['DEFAULT']['cloud_id'],
-            api_key=(config['DEFAULT']['apikey_id'], config['DEFAULT']['apikey_key']),
+            hosts=[config['DEFAULT']['host']],
+            basic_auth=(config['DEFAULT']['basic_user'], config['DEFAULT']['basic_pass']),
         )
 
     def test_connection(self):

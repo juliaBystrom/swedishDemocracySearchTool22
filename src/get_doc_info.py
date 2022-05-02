@@ -53,8 +53,6 @@ def get_docs_dictionary():
     return docs
 
 def create_document(text, doc_info, ref_out=None):
-
-def create_document(text, doc_info):
     publicerad: str = doc_info['publicerad']
     pdf_url: str = ""
     if doc_info['filbilaga'] is not None:

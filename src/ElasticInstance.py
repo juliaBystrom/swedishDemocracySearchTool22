@@ -84,13 +84,13 @@ class ElasticInstance:
                 document_id optional(str): The id of the document. If not given, a new id is generated.
     """
     def add_to_index(self, index_name, document, document_id=None):
-         
+
         try:
             if document_id is None:
                 # No explicit id given to the inserted document.
                 return self.es.index(
-                    index=index_name, 
-                    document=document,    
+                    index=index_name,
+                    document=document,
                 )
             else:
                 return self.es.index(
@@ -103,8 +103,8 @@ class ElasticInstance:
 
     def add_name(self, index_name, doc_name, doc_id):
         return self.es.index(
-                    index=index_name, 
-                    id=doc_name, 
+                    index=index_name,
+                    id=doc_name,
                     document={"doc_id":doc_id}
                 )
 
@@ -163,7 +163,7 @@ class ElasticInstance:
             return None
 
     def get_id_by_name(self, index_name, doc_name):
-        try:  
+        try:
             #print(self.es.get(index=index_name, id=doc_name))
             return self.es.get(index=index_name, id=doc_name)["_source"]["doc_id"]
         except NotFoundError:

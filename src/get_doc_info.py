@@ -5,6 +5,7 @@ import os
 import json
 import re
 
+
 def get_references(text, doc_name):
     ref = re.findall('\(SOU \d{4}:\d+\w*\d*\)', text)
     reference_list = []
@@ -33,7 +34,8 @@ def get_doc_text(id):
 
 def get_docs_dictionary():
     #search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
-    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=2000&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    #search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=2000&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=1990-01-01&tom=1995-12-31&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=rel&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
     doc_data = json.loads(requests.get(url=search_url).text)
     docs = {}
     for doc in doc_data['dokumentlista']['dokument']:
@@ -49,13 +51,10 @@ def get_docs_dictionary():
             #print(doc['dok_id'])
             docs[doc['dok_id']] = doc
         break
-
-    
-
     return docs
 
 def create_document(text, doc_info, ref_out=None):
-
+    print("Created document")
     publicerad: str = doc_info['publicerad']
     pdf_url: str = ""
     if doc_info['filbilaga'] is not None: 

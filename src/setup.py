@@ -1,13 +1,13 @@
 from ElasticInstance import *
 from get_doc_info import create_document, get_doc_text, get_docs_dictionary, get_references
+from calculate_pagerank import get_pageranks
 
-index_docs = "demo2"
-index_names = "names_to_id"
-
+index_docs = "celine_testar_pr"
+index_names = "names_to_id2"
 
 def fetch_and_add_data_to_es(el_inst: ElasticInstance):
     docs = get_docs_dictionary()
-
+    
     ids = []
     for id, v in docs.items():
         ids.append(id)
@@ -30,11 +30,10 @@ def fetch_and_add_data_to_es(el_inst: ElasticInstance):
                     print("ref_out_id: {} . {}:{} - {}".format(ref_out_id, referenced_doc["_source"]["rm"], referenced_doc["_source"]["nummer"], referenced_doc["_source"]["ref_in"]))
                     el_inst.update_document(index_docs, referenced_doc['_source'], ref_out_id)        # Updates the referred docs with id of current doc. 
                 #print(referenced_doc['_source'].keys())
-                
+        print(ids)       
         document = create_document(text, v, ref_out_ids)
         el_inst.add_to_index(index_docs, document, id )
         
-
 
 def search_data(el_inst: ElasticInstance):
 
@@ -43,6 +42,7 @@ def search_data(el_inst: ElasticInstance):
 
 el_inst = ElasticInstance()
 fetch_and_add_data_to_es(el_inst)
-el_inst.refresh_index(index_docs)
+get_pageranks(el_inst, index_docs)
+#el_inst.refresh_index(index_docs)
 #search_data(el_inst)
 

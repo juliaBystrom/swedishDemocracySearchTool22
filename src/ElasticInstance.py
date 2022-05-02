@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch, helpers, NotFoundError
+from elasticsearch import Elasticsearch, NotFoundError
 import configparser
 
 
@@ -107,8 +107,6 @@ class ElasticInstance:
                     id=doc_name, 
                     document={"doc_id":doc_id}
                 )
-
-
     """
         Args:
             index_name: Name of the index containing the document to be updated
@@ -169,6 +167,15 @@ class ElasticInstance:
         except NotFoundError:
             print(f"[Error] Document with name {doc_name} was not found")
             return None
+
+    def get_all_docs(self, index_name):  # Maybe not needed /Celine
+        result = self.es.scroll(index=index_name, 
+            body={'query': {
+                'match_all': {}
+            }}
+        )
+        result['hits']['hits']
+
 
     def delete_document_by_id(self, index_name, document_id):
         try:

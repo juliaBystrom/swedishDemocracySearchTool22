@@ -136,6 +136,7 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
             doc['_source']["ref_in_objects"] = ref_in_objects
 
 
+
     # If the user has specified that the text field should be returned, return the text field for each document.
     if text:
         return docs

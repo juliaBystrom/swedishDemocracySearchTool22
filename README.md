@@ -11,7 +11,7 @@
 `pip install -r requirements.txt`
 
 ## After first time set up
-Run `source sokvenv/bin/activate` to start enviroment. If new requriemnts are added you need to install those using `pip install -r requirements.txt`.
+Run `source sokvenv/bin/activate` to start enviroment. If new requriemnts are added you need to install those using `pip3 install -r requirements.txt`.
 
 
 # Run server

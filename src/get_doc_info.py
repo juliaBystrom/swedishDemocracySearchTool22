@@ -33,14 +33,14 @@ def get_doc_text(id):
     return text
 
 def get_docs_dictionary():
-    #search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
-    #search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=2000&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
-    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=1990-01-01&tom=1995-12-31&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=rel&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    #TEST: search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=2000&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    #TEST: search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=1990-01-01&tom=1995-12-31&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=rel&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
     doc_data = json.loads(requests.get(url=search_url).text)
     docs = {}
     for doc in doc_data['dokumentlista']['dokument']:
         #print(doc['dok_id'])
-        docs[doc['dok_id']] = doc
+        docs[doc['dok_id'].lower()] = doc
 
     i = 0
     while('@nasta_sida') in doc_data['dokumentlista']:
@@ -49,8 +49,7 @@ def get_docs_dictionary():
         doc_data = json.loads(requests.get(url=doc_data['dokumentlista']['@nasta_sida']).text)
         for doc in doc_data['dokumentlista']['dokument']:
             #print(doc['dok_id'])
-            docs[doc['dok_id']] = doc
-        break
+            docs[doc['dok_id'].lower()] = doc
     return docs
 
 def create_document(text, doc_info, ref_out=None):

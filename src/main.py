@@ -9,7 +9,7 @@ from elastic_helpers import get_date_query, get_search_string_match_query
 
 elastic = ElasticInstance()
 app = FastAPI()
-INDEX_NAME = "demo"
+INDEX_NAME = "demo2"
 
 # Solving CORS issue with FastAPI https://fastapi.tiangolo.com/tutorial/cors/
 origins = [
@@ -87,6 +87,10 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
     # If no docs was found return an empty list
     if not docs:
         return []
+
+
+    # Sort docs
+
 
     # If the user has specified that the text field should be returned, return the text field for each document.
     if text:

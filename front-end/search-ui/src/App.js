@@ -62,12 +62,12 @@ function App() {
   );
 
   const onSuccess = (jsonRes) => {
-    const parsedJson = JSON.parse(jsonRes);
+    //const parsedJson = JSON.parse(jsonRes);
     // console.log(parsedJson)
     dispatchSearchRes({
       type: "setResult",
       field: "documents",
-      payload: parsedJson,
+      payload: jsonRes,
     });
   };
 

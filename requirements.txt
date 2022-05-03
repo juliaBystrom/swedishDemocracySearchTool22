@@ -6,3 +6,7 @@ pandas
 lxml
 fastapi
 uvicorn[standard]
+scikit-network
+numpy
+
+

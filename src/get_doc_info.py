@@ -29,13 +29,13 @@ def get_doc_text(id):
     try:
         dokument = soup1.dokumentstatus.dokument
     except AttributeError:
-        print("[Error] Dokument field missing for ID {}, skipping.".format(id), file=sys.stderr)
+        print(f"Dokument field missing in document {id}, skipping.", file=sys.stderr)
         return ""
 
     try:
         soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
     except AssertionError:
-        print("[Error] Invalid HTML in document {}, skipping.".format(id), file=sys.stderr)
+        print(f"Invalid HTML in document {id}, skipping.", file=sys.stderr)
         return ""
 
     text = soup2.get_text()

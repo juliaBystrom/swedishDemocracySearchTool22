@@ -8,4 +8,5 @@ fastapi
 uvicorn[standard]
 scikit-network
 numpy
-#daal==2021.2.3
+
+

@@ -9,7 +9,7 @@ from elastic_helpers import get_date_query, get_search_string_match_query
 
 elastic = ElasticInstance()
 app = FastAPI()
-INDEX_NAME = "demo"
+INDEX_NAME = "demo2"
 
 # Solving CORS issue with FastAPI https://fastapi.tiangolo.com/tutorial/cors/
 origins = [
@@ -35,13 +35,38 @@ async def read_root():
 
 """
 Returns document by id
+  extended_references: If True, the references will be returned as objects
 
 """
 @app.get("/document/{id}")
-async def read_item(id: str, text: bool = False):
+async def read_item(id: str, text: bool = False, extended_references: bool = False):
     doc = elastic.get_document_by_id(INDEX_NAME, id)
     if not doc:
         return {"error": "Document not found"}
+
+    if extended_references:
+        ref_out_objects = []
+        for ref_out in doc['_source']['ref_out']:
+            try:
+                ref_out_o = elastic.get_document_by_id(INDEX_NAME, ref_out)
+                if not text:
+                    ref_out_o['_source'].pop('text')
+                ref_out_objects.append(ref_out_o)
+            except:
+                print("Could not find reference: ", ref_out)
+        doc['_source']["ref_out_objects"] = ref_out_objects
+        ref_in_objects = []
+        for ref_in in doc['_source']['ref_in']:
+            try:
+                ref_in_o = elastic.get_document_by_id(INDEX_NAME, ref_in)
+                if not text:
+                    ref_in_o['_source'].pop('text')
+                ref_in_objects.append(ref_in_o)
+            except:
+                print("Could not find reference: ", ref_in)
+        doc['_source']["ref_in_objects"] = ref_in_objects
+    
+    
     if text:
         return doc
     else:
@@ -56,13 +81,12 @@ Returns all documents matching the search query.
             end_date: End date for filtering the search (YYYY-MM-DD)
             text: If true, the text field will be returned
             phrase_search: If True, the search will be performed with a phrase search
+            extended_references: If True, the references will be returned as objects
 
 
 """
-
-
 @app.get("/documents/search/")
-async def read_item(search_string: str = None, start_date: str = None, end_date: str = None, text: bool = False, phrase_search: bool = False):
+async def read_item(search_string: str = None, start_date: str = None, end_date: str = None, text: bool = False, phrase_search: bool = False, extended_references: bool = False):
     print("search_string: ", search_string, "start_date: ", start_date,
           "end_date: ", end_date, "text: ", text, "phrase_search: ", phrase_search)
 
@@ -87,6 +111,30 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
     # If no docs was found return an empty list
     if not docs:
         return []
+
+    if extended_references:
+        for doc in docs:
+            ref_out_objects = []
+            for ref_out in doc['_source']['ref_out']:
+                try:
+                    ref_out_o = elastic.get_document_by_id(INDEX_NAME, ref_out)
+                    if not text:
+                        ref_out_o['_source'].pop('text')
+                    ref_out_objects.append(ref_out_o)
+                except:
+                    print("Could not find reference: ", ref_out)
+            doc['_source']["ref_out_objects"] = ref_out_objects
+            ref_in_objects = []
+            for ref_in in doc['_source']['ref_in']:
+                try:
+                    ref_in_o = elastic.get_document_by_id(INDEX_NAME, ref_in)
+                    if not text:
+                        ref_in_o['_source'].pop('text')
+                    ref_in_objects.append(ref_in_o)
+                except:
+                    print("Could not find reference: ", ref_in)
+            doc['_source']["ref_in_objects"] = ref_in_objects
+
 
     # If the user has specified that the text field should be returned, return the text field for each document.
     if text:

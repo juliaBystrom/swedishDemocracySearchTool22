@@ -137,9 +137,14 @@ class ElasticInstance:
     def search_index(self, index_name, field, search_string):
         result = self.es.search(
             index=index_name,
-            body={ 'query': {
-                'match': {field: search_string}
-            }}
+            body={
+                'query': {
+                    'match': { field: search_string },
+                    'should': [
+                        { 'rank_feature': { 'field' : 'pagerank' } }
+                    ]
+                }
+            }
         )
         return result['hits']['hits']
 

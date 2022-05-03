@@ -9,7 +9,13 @@ export function createSearchUrl(
   const phrase_search = phraseSearch ? `&phrase_search=${phraseSearch}` : "";
   const date_from = filterDateFrom ? `&end_date=${filterDateFrom}` : "";
   const date_to = filterDateTo ? `&start_date=${filterDateTo}` : "";
-  const url = `${base}?${search_string}${phrase_search}${date_from}${date_to}`;
+  const url = `${base}?${search_string}${phrase_search}${date_from}${date_to}&extended_references=true`;
+  return url;
+}
+
+export function createDocumentByIdUrl(id) {
+  const base = "http://localhost:8000/document/";
+  const url = `${base}${id}?&extended_references=true`;
   return url;
 }
 
@@ -44,8 +50,9 @@ export function searchRequest(searchUrl, onSuccess, onFail) {
 
       // If an error is thrown it will be caught and handeled here.
       // Depending on the error the correct error message will be set
-      console.log(error);
-      if (error >= 500) {
+      if (error === 404) {
+        errorMessage = "Index not found";
+      } else if (error >= 500) {
         // Handle server errors
         errorMessage = "Server error";
       } else if (error >= 400) {
@@ -59,8 +66,6 @@ export function searchRequest(searchUrl, onSuccess, onFail) {
     .finally(() => {
       // If errors were caugh while fetching the onError with correct errorMessage will be executed
       // otherwise onSuccess functionw with fetched json data
-      console.log(jsonData);
-      console.log(errorMessage);
       return successeFullFetch ? onSuccess(jsonData) : onFail(errorMessage);
     });
 }
@@ -80,10 +85,9 @@ export const YEAR_VECTOR = [
 
 // https://coolors.co/cfdbd5-e8eddf-373d20-7b9aa3-242423
 export const COLOURS = {
-    base: "#CFDBD5",
-    lightBase: "#E8EDDF",
-    darkText: "#242423",
-    primaryColour: "#373D20",
-    secondaryColour: "#7B9AA3",
-
-}
+  base: "#CFDBD5",
+  lightBase: "#E8EDDF",
+  darkText: "#242423",
+  primaryColour: "#373D20",
+  secondaryColour: "#7B9AA3",
+};

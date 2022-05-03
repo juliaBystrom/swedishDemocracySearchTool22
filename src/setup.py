@@ -15,25 +15,25 @@ def fetch_and_add_data_to_es(el_inst: ElasticInstance):
         doc_name = str(v["rm"]) + ":" + str(v["nummer"])
         ref_out_names = get_references(text, doc_name)
         ref_out_ids = []
-        el_inst.add_name(index_names, doc_name, id) 
-        
+        el_inst.add_name(index_names, doc_name, id)
+
         #print("id", id)
         #print("refs", ref_out_names)
-        
+
         for ref_name in ref_out_names:
             ref_out_id = el_inst.get_id_by_name(index_names, ref_name)
             if ref_out_id is not None:
-                ref_out_ids.append(ref_out_id) 
+                ref_out_ids.append(ref_out_id)
                 referenced_doc = el_inst.get_document_by_id(index_docs, ref_out_id)
                 if referenced_doc is not None:
                     referenced_doc["_source"]["ref_in"].append(id)
                     print("ref_out_id: {} . {}:{} - {}".format(ref_out_id, referenced_doc["_source"]["rm"], referenced_doc["_source"]["nummer"], referenced_doc["_source"]["ref_in"]))
-                    el_inst.update_document(index_docs, referenced_doc['_source'], ref_out_id)        # Updates the referred docs with id of current doc. 
+                    el_inst.update_document(index_docs, referenced_doc['_source'], ref_out_id)        # Updates the referred docs with id of current doc.
                 #print(referenced_doc['_source'].keys())
-                
+
         document = create_document(text, v, ref_out_ids)
         el_inst.add_to_index(index_docs, document, id )
-        
+
 
 
 def search_data(el_inst: ElasticInstance):

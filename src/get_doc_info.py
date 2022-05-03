@@ -4,6 +4,7 @@ import requests
 import os
 import json
 import re
+import sys
 
 def get_references(text, doc_name):
     ref = re.findall('\(SOU \d{4}:\d+\w*\d*\)', text)
@@ -20,11 +21,22 @@ def get_references(text, doc_name):
     return reference_list
 
 def get_doc_text(id):
+    print('Getting text from id: {}'.format(id))
     url = "https://data.riksdagen.se/dokumentstatus/" + str(id)
     response = requests.get(url)
     soup1 = BeautifulSoup(response.text, 'lxml')
-    dokument = soup1.dokumentstatus.dokument
-    soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
+    try:
+        dokument = soup1.dokumentstatus.dokument
+    except AttributeError:
+        print("[Error] Dokument field missing for ID {}, skipping.".format(id), file=sys.stderr)
+        return ""
+
+    try:
+        soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
+    except AssertionError:
+        print("[Error] Invalid HTML in document {}, skipping.".format(id), file=sys.stderr)
+        return ""
+
     text = soup2.get_text()
     text = re.sub(r'- och', ' och', text)
     #test = re.sub(r'-/', ' ', test) don't need
@@ -32,8 +44,8 @@ def get_doc_text(id):
     return text
 
 def get_docs_dictionary():
-    #search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
-    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=2000&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
+    # search_url = 'https://data.riksdagen.se/dokumentlista/?sok=&doktyp=sou&rm=2000&from=&tom=&ts=&bet=&tempbet=&nr=&org=&iid=&avd=&webbtv=&talare=&exakt=&planering=&facets=&sort=datum&sortorder=asc&rapport=&utformat=json&a=s#soktraff'
     doc_data = json.loads(requests.get(url=search_url).text)
     docs = {}
     for doc in doc_data['dokumentlista']['dokument']:
@@ -48,7 +60,6 @@ def get_docs_dictionary():
         for doc in doc_data['dokumentlista']['dokument']:
             #print(doc['dok_id'])
             docs[doc['dok_id']] = doc
-        break
 
     return docs
 
@@ -74,5 +85,4 @@ def create_document(text, doc_info, ref_out=None):
         'ref_out': ref_out,
         'ref_in': ref_in
     }
-
     return document

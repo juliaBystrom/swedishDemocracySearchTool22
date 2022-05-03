@@ -62,8 +62,6 @@ function App() {
   );
 
   const onSuccess = (jsonRes) => {
-    //const parsedJson = JSON.parse(jsonRes);
-    // console.log(parsedJson)
     dispatchSearchRes({
       type: "setResult",
       field: "documents",
@@ -86,10 +84,8 @@ function App() {
       state.filterDateFrom,
       state.filterDateFrom
     );
-    console.log(url);
 
     const res = searchRequest(url, onSuccess, onFail);
-    console.log(res);
   }
 
   return (

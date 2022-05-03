@@ -47,7 +47,7 @@ class ElasticInstance:
         output = self.es.info()
         print(output)
 
-    def refesh_index(self, index_name):
+    def refresh_index(self, index_name):
         self.es.indices.refresh(index=index_name)
 
     """
@@ -79,31 +79,35 @@ class ElasticInstance:
             If an index with the given name does not exist, returns None.
             If a document with the given id already exists, it is updated.
 
-
             Args:
                 index_name (str): The name of the index.
                 document_id optional(str): The id of the document. If not given, a new id is generated.
     """
     def add_to_index(self, index_name, document, document_id=None):
-
-        if self.es.indices.exists(index=index_name):
-            try:
-                if document_id is None:
-                    # No explicit id given to the inserted document.
-                    return self.es.index(
-                        index=index_name,
-                        document=document
-                    )
-                else:
-                    return self.es.index(
-                        index=index_name,
-                        id=document_id,
-                        document=document
-                    )
-            except Exception:
-                return None
-        else:
+         
+        try:
+            if document_id is None:
+                # No explicit id given to the inserted document.
+                return self.es.index(
+                    index=index_name, 
+                    document=document,    
+                )
+            else:
+                return self.es.index(
+                    index=index_name,
+                    id=document_id,
+                    document=document
+                )
+        except Exception:
             return None
+
+    def add_name(self, index_name, doc_name, doc_id):
+        return self.es.index(
+                    index=index_name, 
+                    id=doc_name, 
+                    document={"doc_id":doc_id}
+                )
+
 
     """
         Args:
@@ -113,14 +117,13 @@ class ElasticInstance:
                       If the fields does not exist, they will be added to the document.
 
     """
-    def update_document(self, index_name, document_id, document):
-
+    def update_document(self, index_name, document, document_id):
         try:
             return self.es.update(
                 index=index_name,
                 id=document_id,
                 doc=document
-            )
+                )
         except NotFoundError:
             print(f"[Error] Can not update document with id {document_id} because it was not found")
             return None
@@ -159,6 +162,14 @@ class ElasticInstance:
             print(f"[Error] Document with id {document_id} was not found")
             return None
 
+    def get_id_by_name(self, index_name, doc_name):
+        try:  
+            #print(self.es.get(index=index_name, id=doc_name))
+            return self.es.get(index=index_name, id=doc_name)["_source"]["doc_id"]
+        except NotFoundError:
+            print(f"[Error] Document with name {doc_name} was not found")
+            return None
+
     def delete_document_by_id(self, index_name, document_id):
         try:
             return self.es.delete(index=index_name, id=document_id)
@@ -172,4 +183,3 @@ class ElasticInstance:
             return True
         except NotFoundError:
             return False
-

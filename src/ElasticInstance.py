@@ -14,7 +14,8 @@ class ElasticInstance:
             "rm":         { "type": "integer" },
             "beteckning": { "type": "integer" },
             "doktyp":     { "type": "keyword" },
-            "referenser": { "type": "keyword" }
+            "referenser": { "type": "keyword" },
+            "pagerank":   { "type": "rank_feature" }
         }
     }
 

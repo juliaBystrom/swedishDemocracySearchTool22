@@ -4,6 +4,7 @@ import requests
 import os
 import json
 import re
+import sys
 
 
 def get_references(text, doc_name):
@@ -21,11 +22,22 @@ def get_references(text, doc_name):
     return reference_list
 
 def get_doc_text(id):
+    print('Getting text from id: {}'.format(id))
     url = "https://data.riksdagen.se/dokumentstatus/" + str(id)
     response = requests.get(url)
     soup1 = BeautifulSoup(response.text, 'lxml')
-    dokument = soup1.dokumentstatus.dokument
-    soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
+    try:
+        dokument = soup1.dokumentstatus.dokument
+    except AttributeError:
+        print(f"Dokument field missing in document {id}, skipping.", file=sys.stderr)
+        return ""
+
+    try:
+        soup2 = BeautifulSoup(dokument.get_text(), 'html.parser')
+    except AssertionError:
+        print(f"Invalid HTML in document {id}, skipping.", file=sys.stderr)
+        return ""
+
     text = soup2.get_text()
     text = re.sub(r'- och', ' och', text)
     #test = re.sub(r'-/', ' ', test) don't need
@@ -50,6 +62,7 @@ def get_docs_dictionary():
         for doc in doc_data['dokumentlista']['dokument']:
             #print(doc['dok_id'])
             docs[doc['dok_id'].lower()] = doc
+
     return docs
 
 def create_document(text, doc_info, ref_out=None):

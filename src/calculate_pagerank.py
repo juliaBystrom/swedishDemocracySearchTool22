@@ -54,9 +54,8 @@ def get_pageranks(el_inst, index_name):
             
     # Create transition matrix (TM)
     not_found = create_transition_matrix(ids, el_inst, index_name)
-    print("Could not find", len(not_found), "documents.\n")
-    for n_id in not_found:
-        print(n_id)
+
+    print("Could not find", len(not_found), "documents while creating transition matrix.", file=sys.stderr)
     
     # Load TM from file
     df = pd.read_csv('transition_matrix.csv', names=ids, header=None)
@@ -73,3 +72,4 @@ el_inst = ElasticInstance()
 index_docs = 'demo3'
 #fetch_and_add_data_to_es(el_inst)
 get_pageranks(el_inst, index_docs)
+

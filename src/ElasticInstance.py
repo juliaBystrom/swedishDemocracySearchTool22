@@ -86,13 +86,13 @@ class ElasticInstance:
                 document_id optional(str): The id of the document. If not given, a new id is generated.
     """
     def add_to_index(self, index_name, document, document_id=None):
-         
+
         try:
             if document_id is None:
                 # No explicit id given to the inserted document.
                 return self.es.index(
-                    index=index_name, 
-                    document=document,    
+                    index=index_name,
+                    document=document,
                 )
             else:
                 return self.es.index(
@@ -105,8 +105,8 @@ class ElasticInstance:
 
     def add_name(self, index_name, doc_name, doc_id):
         return self.es.index(
-                    index=index_name, 
-                    id=doc_name, 
+                    index=index_name,
+                    id=doc_name,
                     document={"doc_id":doc_id}
                 )
     """
@@ -125,7 +125,7 @@ class ElasticInstance:
                 doc=document
                 )
         except NotFoundError:
-            print(f"[Error] Can not update document with id {document_id} because it was not found")
+            print(f"Could not update document with id {document_id} because it was not found.", file=sys.stderr)
             return None
 
     """
@@ -164,15 +164,15 @@ class ElasticInstance:
         try:
             return self.es.get(index=index_name, id=document_id)
         except NotFoundError:
-            print(f"[Error] Document with id {document_id} was not found")
+            print(f"Document with id {document_id} was not found.", file=sys.stderr)
             return None
 
     def get_id_by_name(self, index_name, doc_name):
-        try:  
+        try:
             #print(self.es.get(index=index_name, id=doc_name))
             return self.es.get(index=index_name, id=doc_name)["_source"]["doc_id"]
         except NotFoundError:
-            print(f"[Error] Document with name {doc_name} was not found")
+            print(f"Document with name {doc_name} was not found.", file=sys.stderr)
             return None
 
     def get_all_docs(self, index_name):  
@@ -189,7 +189,7 @@ class ElasticInstance:
         try:
             return self.es.delete(index=index_name, id=document_id)
         except NotFoundError:
-            print(f"[Error] Can not delete document with id {document_id} because it was not found")
+            print(f"Can not delete document with id {document_id} because it was not found.", file=sys.stderr)
             return None
 
     def document_exists(self, index_name, document_id):

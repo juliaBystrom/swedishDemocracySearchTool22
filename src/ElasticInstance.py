@@ -152,7 +152,11 @@ class ElasticInstance:
             index=index_name,
             body= query
         )
-        return result['hits']['hits']
+        res = result['hits']['hits']
+        a = result
+        a['hits'].pop('hits')
+        numberOfDocs = a['hits']['total']['value']
+        return res, numberOfDocs
 
     def get_document_by_id(self, index_name, document_id):
         try:

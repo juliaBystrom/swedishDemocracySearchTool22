@@ -2,14 +2,17 @@ export function createSearchUrl(
   searchText,
   phraseSearch,
   filterDateFrom,
-  filterDateTo
+  filterDateTo,
+  pageNumber
 ) {
+  console.log("page_number", pageNumber);
   const base = "http://localhost:8000/documents/search/";
   const search_string = searchText ? `search_string=${searchText}` : "";
   const phrase_search = phraseSearch ? `&phrase_search=${phraseSearch}` : "";
   const date_from = filterDateFrom ? `&end_date=${filterDateFrom}` : "";
   const date_to = filterDateTo ? `&start_date=${filterDateTo}` : "";
-  const url = `${base}?${search_string}${phrase_search}${date_from}${date_to}&extended_references=true`;
+  const page_number = pageNumber ? `&page_number=${pageNumber}`: "";
+  const url = `${base}?${search_string}${phrase_search}${date_from}${date_to}&extended_references=true${page_number}`;
   return url;
 }
 

@@ -86,7 +86,7 @@ Returns all documents matching the search query.
 
 """
 @app.get("/documents/search/")
-async def read_item(search_string: str = None, start_date: str = None, end_date: str = None, text: bool = False, phrase_search: bool = False, extended_references: bool = False):
+async def read_item(search_string: str = None, start_date: str = None, end_date: str = None, text: bool = False, phrase_search: bool = False, extended_references: bool = False, page_size: int = 10, page_number: int = 0):
     print("search_string: ", search_string, "start_date: ", start_date,
           "end_date: ", end_date, "text: ", text, "phrase_search: ", phrase_search)
 
@@ -103,10 +103,12 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
             "text", search_string, phrase_search)
 
     # Combine the filters into a single query
-    query = {"query": {"bool": {**search_string_filter,  **date_filter}}}
+
+    query = {"size": page_size, "from": page_number*page_size, "query": {"bool": {**search_string_filter,  **date_filter}}}
     # Search the index
-    docs = elastic.search_index_custom_query(INDEX_NAME, query)
+    docs, totalOfDocs = elastic.search_index_custom_query(INDEX_NAME, query)
     print("Found ", len(docs), " documents.")
+    print("Total ", totalOfDocs, " documents.")
 
     # If no docs was found return an empty list
     if not docs:
@@ -138,10 +140,11 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
 
 
     # If the user has specified that the text field should be returned, return the text field for each document.
-    if text:
-        return docs
-    else:
+
+    if not text:
         # Remove the text field from the documents
         for doc in docs:
             doc['_source'].pop('text')
-        return docs
+        
+    return {"documents": docs, "foundDocuments": totalOfDocs}
+

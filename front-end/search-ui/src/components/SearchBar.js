@@ -39,7 +39,7 @@ export default function SearchBar({ state, dispatch, onSearch }) {
         <IconButton
           sx={{ p: "10px" }}
           aria-label="search"
-          onClick={() => onSearch()}
+          onClick={() => onSearch(0)}
         >
           <SearchIcon />
         </IconButton>

@@ -118,7 +118,7 @@ export default function SearchResults({ searchRes }) {
                 <Typography variant="h6" component="div" sx={{ fontSize: 16 }}>
                   Refererar till 
                 </Typography>
-                <List dense>
+                <List dense style={{maxHeight: 200, overflow: 'auto'}}>
                   {getRefListedItems(doc._source.ref_out_objects, handleOpen)}
                 </List>
               </Box>
@@ -132,7 +132,7 @@ export default function SearchResults({ searchRes }) {
                 <Typography variant="h6" component="div" sx={{ fontSize: 16 }}>
                   Refererad av
                 </Typography>
-                <List dense>
+                <List dense style={{maxHeight: 200, overflow: 'auto'}}>
                   {getRefListedItems(doc._source.ref_in_objects, handleOpen)}
                 </List>
               </Box>
@@ -271,7 +271,7 @@ export function BasicModal({
                   >
                     Refererar till
                   </Typography>
-                  <List dense>
+                  <List dense style={{maxHeight: 600, overflow: 'auto'}}>
                     {getRefListedItems(
                       doc._source.ref_out_objects,
                       handleChangeDocumentInModal
@@ -290,7 +290,7 @@ export function BasicModal({
                     sx={{ fontSize: 14 }}>
                     Refererad av
                   </Typography>
-                  <List dense>
+                  <List dense style={{maxHeight: 600, overflow: 'auto'}}>
                     {getRefListedItems(
                       doc._source.ref_in_objects,
                       handleChangeDocumentInModal

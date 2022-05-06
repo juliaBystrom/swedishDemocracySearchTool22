@@ -13,7 +13,6 @@
 ## After first time set up
 Run `source sokvenv/bin/activate` to start enviroment. If new requriemnts are added you need to install those using `pip3 install -r requirements.txt`.
 
-
 # Run server
 In the src folder run:
 uvicorn main:app --reload

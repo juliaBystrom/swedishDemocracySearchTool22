@@ -40,7 +40,6 @@ def get_doc_text(id):
 
     text = soup2.get_text()
     text = re.sub(r'- och', ' och', text)
-    #test = re.sub(r'-/', ' ', test) don't need
     text = re.sub(r'- ', '', text)
     return text
 
@@ -62,15 +61,19 @@ def get_docs_dictionary():
         for doc in doc_data['dokumentlista']['dokument']:
             #print(doc['dok_id'])
             docs[doc['dok_id'].lower()] = doc
-
     return docs
 
+def fix_summary_text(summary):
+    summary = re.sub(r'- och', ' och', summary)
+    summary = re.sub(r'- ', '', summary)
+    return summary
+    
 def create_document(text, doc_info, ref_out=None):
     publicerad: str = doc_info['publicerad']
     pdf_url: str = ""
     if doc_info['filbilaga'] is not None:
         pdf_url: str = doc_info['filbilaga']['fil']['url']
-    summary: str = doc_info['summary']
+    summary: str = fix_summary_text(doc_info['summary'])
     rm: str = doc_info['rm']
     nummer: str = doc_info['nummer']
     doktyp: str = doc_info['doktyp']

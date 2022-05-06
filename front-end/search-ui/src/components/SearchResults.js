@@ -58,6 +58,7 @@ export default function SearchResults({ searchRes }) {
     });
   };
 
+  
   const searchResCards = searchRes.documents.map((doc, i) => {
     return (
       <Card
@@ -94,6 +95,9 @@ export default function SearchResults({ searchRes }) {
             }}
           >
             <Box>
+                <Typography variant="h6" component="div" sx={{ fontSize: 16 }}>
+                  Sammanfattning
+                </Typography>
               <Typography variant="body2" color={COLOURS.darkText}>
                 {doc._source.summary}
               </Typography>
@@ -112,10 +116,10 @@ export default function SearchResults({ searchRes }) {
                 }}
               >
                 <Typography variant="h6" component="div" sx={{ fontSize: 16 }}>
-                  Referenced by
+                  Refererar till 
                 </Typography>
-                <List dense>
-                  {getRefListedItems(doc._source.ref_in_objects, handleOpen)}
+                <List dense style={{maxHeight: 200, overflow: 'auto'}}>
+                  {getRefListedItems(doc._source.ref_out_objects, handleOpen)}
                 </List>
               </Box>
 
@@ -126,10 +130,10 @@ export default function SearchResults({ searchRes }) {
                 }}
               >
                 <Typography variant="h6" component="div" sx={{ fontSize: 16 }}>
-                  References
+                  Refererad av
                 </Typography>
-                <List dense>
-                  {getRefListedItems(doc._source.ref_out_objects, handleOpen)}
+                <List dense style={{maxHeight: 200, overflow: 'auto'}}>
+                  {getRefListedItems(doc._source.ref_in_objects, handleOpen)}
                 </List>
               </Box>
             </Box>
@@ -191,6 +195,7 @@ export function BasicModal({
     setLoadingStatus(LOADING_STATUS.ERROR);
   };
 
+  
   React.useEffect(() => {
     if (docID) {
       setLoadingStatus(LOADING_STATUS.LOADING);
@@ -232,9 +237,19 @@ export function BasicModal({
               }}
             >
               <Box>
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ fontSize: 14 }}
+                  >
+                    Sammanfattning 
+                  </Typography>
                 <Typography variant="body2" color={COLOURS.darkText}>
                   {doc._source.summary}
                 </Typography>
+                <Button onClick={() => window.open(doc._source.pdf_url, '_blank')}>
+                    Öppna PDF
+                </Button>
               </Box>
               <Box
                 sx={{
@@ -256,7 +271,7 @@ export function BasicModal({
                   >
                     Refererar till
                   </Typography>
-                  <List dense>
+                  <List dense style={{maxHeight: 600, overflow: 'auto'}}>
                     {getRefListedItems(
                       doc._source.ref_out_objects,
                       handleChangeDocumentInModal
@@ -272,11 +287,10 @@ export function BasicModal({
                   <Typography
                     variant="h6"
                     component="div"
-                    sx={{ fontSize: 14 }}
-                  >
-                    Andra SOU som refererar till {crateTitle(doc)}
+                    sx={{ fontSize: 14 }}>
+                    Refererad av
                   </Typography>
-                  <List dense>
+                  <List dense style={{maxHeight: 600, overflow: 'auto'}}>
                     {getRefListedItems(
                       doc._source.ref_in_objects,
                       handleChangeDocumentInModal

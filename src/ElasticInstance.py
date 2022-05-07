@@ -2,6 +2,8 @@ from operator import index
 from elasticsearch import Elasticsearch, NotFoundError, helpers
 import configparser
 
+from fastapi import Query
+
 
 class ElasticInstance:
 
@@ -141,11 +143,15 @@ class ElasticInstance:
                 'query': {
                     'match': { field: search_string },
                     'should': [
-                        { 'rank_feature': { 'field' : 'pagerank' } }
+                        { 'rank_feature': {
+                            'field' : 'pagerank'
+                            }
+                        }
                     ]
                 }
             }
         )
+        
         return result['hits']['hits']
 
     """
@@ -156,7 +162,7 @@ class ElasticInstance:
     def search_index_custom_query(self, index_name, query):
         result =  self.es.search(
             index=index_name,
-            body= query
+            body=query
         )
         res = result['hits']['hits']
         a = result

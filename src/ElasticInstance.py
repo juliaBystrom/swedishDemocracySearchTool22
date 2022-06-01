@@ -1,6 +1,7 @@
 from operator import index
 from elasticsearch import Elasticsearch, NotFoundError, helpers
 import configparser
+import sys
 
 
 class ElasticInstance:
@@ -179,14 +180,14 @@ class ElasticInstance:
             print(f"Document with name {doc_name} was not found.", file=sys.stderr)
             return None
 
-    def get_all_docs(self, index_name):  
-        hits = helpers.scan(self, 
+    def get_all_docs(self, index_name):
+        hits = helpers.scan(self,
             query={"query":{"match_all": {}}},
             scroll='5000',
             index=index_name
         )
         print(next(hits))
-        return 
+        return
 
 
     def delete_document_by_id(self, index_name, document_id):

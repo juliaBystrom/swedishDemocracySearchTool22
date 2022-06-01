@@ -9,7 +9,7 @@ from elastic_helpers import get_date_query, get_search_string_match_query
 
 elastic = ElasticInstance()
 app = FastAPI()
-INDEX_NAME = "demo2"
+INDEX_NAME = "demo3"
 
 # Solving CORS issue with FastAPI https://fastapi.tiangolo.com/tutorial/cors/
 origins = [
@@ -103,10 +103,29 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
             "text", search_string, phrase_search)
 
     # Combine the filters into a single query
-
-    query = {"size": page_size, "from": page_number*page_size, "query": {"bool": {**search_string_filter,  **date_filter}}}
+    # The top query uses the default score from ES and the second a PageRank combination
+    #query = {"size": page_size, "from": page_number*page_size, "query": {"bool": {**search_string_filter,  **date_filter}}}
+    query = {"size": page_size, "from": page_number*page_size, 
+                "query": {
+                    "function_score": {
+                        "query": {"bool": {**search_string_filter,  **date_filter}},
+                        "functions": [{
+                            "field_value_factor": {
+                                "field": "pagerank",
+                                "factor": 1,
+                                "modifier": "none",
+                                "missing": 0
+                            }
+                        }],
+                        "boost_mode": "replace"
+                    }
+                }
+            }
     # Search the index
     docs, totalOfDocs = elastic.search_index_custom_query(INDEX_NAME, query)
+    for i in range(len(docs)):
+        print("Score ", docs[i]["_score"])
+        print("PR ", docs[i]["_source"]["pagerank"])
     print("Found ", len(docs), " documents.")
     print("Total ", totalOfDocs, " documents.")
 

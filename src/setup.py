@@ -2,8 +2,8 @@ from ElasticInstance import *
 from get_doc_info import create_document, get_doc_text, get_docs_dictionary, get_references
 from calculate_pagerank import get_pageranks
 
-index_docs = "demo2"
-index_names = "names_to_id"
+index_docs = "demo3"
+index_names = "names_to_id3"
 
 def fetch_and_add_data_to_es(el_inst: ElasticInstance):
     docs = get_docs_dictionary()
@@ -41,10 +41,10 @@ def search_data(el_inst: ElasticInstance):
     print("Found ", len(res) ," documents.")
 
 el_inst = ElasticInstance()
+# el_inst.delete_index(index_docs)
+# el_inst.delete_index(index_names)
 el_inst.create_index(index_docs);
 el_inst.create_index(index_names);
 fetch_and_add_data_to_es(el_inst)
-#get_pageranks(el_inst, index_docs)
+get_pageranks(el_inst, index_docs)
 el_inst.refresh_index(index_docs)
-#search_data(el_inst)
-

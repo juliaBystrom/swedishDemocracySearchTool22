@@ -104,8 +104,8 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
 
     # Combine the filters into a single query
     # The top query uses the default score from ES and the second a PageRank combination
-    #query = {"size": page_size, "from": page_number*page_size, "query": {"bool": {**search_string_filter,  **date_filter}}}
-    query = {"size": page_size, "from": page_number*page_size, 
+    query = {"size": page_size, "from": page_number*page_size, "query": {"bool": {**search_string_filter,  **date_filter}}}
+    """query = {"size": page_size, "from": page_number*page_size, 
                 "query": {
                     "function_score": {
                         "query": {"bool": {**search_string_filter,  **date_filter}},
@@ -120,7 +120,7 @@ async def read_item(search_string: str = None, start_date: str = None, end_date:
                         "boost_mode": "replace"
                     }
                 }
-            }
+            }"""
     # Search the index
     docs, totalOfDocs = elastic.search_index_custom_query(INDEX_NAME, query)
     for i in range(len(docs)):
